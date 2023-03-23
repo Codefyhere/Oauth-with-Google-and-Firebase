@@ -1,91 +1,112 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import Image from "next/image";
+import { Poppins } from "next/font/google";
+import firebaseLogo from "../../public/firebase.png";
+import googleLogo from "../../public/google.png";
+import { useState } from "react";
+import { Avatar } from "@mui/material";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { app } from "../../firebaseConfig";
+
+
+const poppins = Poppins({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any | undefined>();
+  const handleSignup = () => {
+    setLoading(true)
+    const provider = new GoogleAuthProvider()
+    const auth = getAuth(app)
+    signInWithPopup(auth, provider)
+    .then((res) => {
+      console.log(res)
+      setUser(res.user)
+    })
+    .catch((error) => {
+      console.log(error.message)
+    })
+    .finally(()=>{
+      setLoading(false)
+    })
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+    <main className={poppins.className}>
+      {user === undefined ? (
+        <div className="space-y-10">
+          <div className="flex items-center gap-4">
+            <h1 className="font-medium text-xl uppercase">Google OAuth with</h1>
+            <Image height={40} alt="firebase-logo" src={firebaseLogo} />
+          </div>
+          <div className="relative flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-tr from-blue-900 to-purple-900 rounded-md cursor-pointer hover:translate-y-[.1rem] hover:opacity-80">
+            {loading && (
+              <div className="absolute top-1/2 right-4 -translate-y-1/2">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </div>
+            )}
+            <button
+              className="flex items-center gap-2"
+              disabled={loading}
+              onClick={handleSignup}
+            >
+              <h1 className="font-medium text-lg">Signup with</h1>
+              <Image
+                className="bg-white p-1 rounded-full"
+                height={25}
+                alt="firebase-logo"
+                src={googleLogo}
+              />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-10">
+          <p className="bg-gradient-to-tr px-5 py-2 rounded-md  from-blue-900 to-purple-900 text-white font-medium text-lg">
+            Logged in Successfully
+          </p>
+          <div className="flex items-center gap-4">
+            <Avatar
+              alt="user"
+              src={user.photoURL}
+              sx={{ width: 100, height: 100 }}
             />
-          </a>
+            <div>
+              <p>
+                <span className="text-blue-500">Name: </span>
+                {user.displayName}
+              </p>
+              <p>
+                <span className="text-blue-500">Email: </span>
+                <span>{user.email}</span>
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      )}
     </main>
-  )
+  );
 }
