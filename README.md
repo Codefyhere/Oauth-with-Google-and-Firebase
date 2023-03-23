@@ -3,6 +3,7 @@
 Create a firebase web app and copy the configuration object
 
 > Setting up Environmental Variables
+
 Create .env.local file in root directory of the project and set it up as shown below.
 
 
